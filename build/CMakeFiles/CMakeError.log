@@ -1,0 +1,62 @@
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
+Change Dir: /root/C_C++ learn/C++learning/线程池/build/CMakeFiles/CMakeScratch/TryCompile-FLbcNO
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_7db06/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_7db06.dir/build.make CMakeFiles/cmTC_7db06.dir/build
+gmake[1]: 进入目录“/root/C_C++ learn/C++learning/线程池/build/CMakeFiles/CMakeScratch/TryCompile-FLbcNO”
+Building C object CMakeFiles/cmTC_7db06.dir/src.c.o
+/opt/rh/devtoolset-9/root/usr/bin/cc -DCMAKE_HAVE_LIBC_PTHREAD   -o CMakeFiles/cmTC_7db06.dir/src.c.o -c "/root/C_C++ learn/C++learning/线程池/build/CMakeFiles/CMakeScratch/TryCompile-FLbcNO/src.c"
+Linking C executable cmTC_7db06
+/opt/cmake/cmake-3.25.1-linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7db06.dir/link.txt --verbose=1
+/opt/rh/devtoolset-9/root/usr/bin/cc -rdynamic CMakeFiles/cmTC_7db06.dir/src.c.o -o cmTC_7db06 
+/opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: CMakeFiles/cmTC_7db06.dir/src.c.o: in function `main':
+src.c:(.text+0x2d): undefined reference to `pthread_create'
+/opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: src.c:(.text+0x39): undefined reference to `pthread_detach'
+/opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: src.c:(.text+0x45): undefined reference to `pthread_cancel'
+/opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: src.c:(.text+0x56): undefined reference to `pthread_join'
+/opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: src.c:(.text+0x6a): undefined reference to `pthread_atfork'
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_7db06] 错误 1
+gmake[1]: 离开目录“/root/C_C++ learn/C++learning/线程池/build/CMakeFiles/CMakeScratch/TryCompile-FLbcNO”
+gmake: *** [cmTC_7db06/fast] 错误 2
+
+
+Source file was:
+#include <pthread.h>
+
+static void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_cancel(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /root/C_C++ learn/C++learning/线程池/build/CMakeFiles/CMakeScratch/TryCompile-jz28xF
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_9816c/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_9816c.dir/build.make CMakeFiles/cmTC_9816c.dir/build
+gmake[1]: 进入目录“/root/C_C++ learn/C++learning/线程池/build/CMakeFiles/CMakeScratch/TryCompile-jz28xF”
+Building C object CMakeFiles/cmTC_9816c.dir/CheckFunctionExists.c.o
+/opt/rh/devtoolset-9/root/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create -o CMakeFiles/cmTC_9816c.dir/CheckFunctionExists.c.o -c "/root/C_C++ learn/C++learning/线程池/build/CMakeFiles/CMakeScratch/TryCompile-jz28xF/CheckFunctionExists.c"
+Linking C executable cmTC_9816c
+/opt/cmake/cmake-3.25.1-linux-x86_64/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9816c.dir/link.txt --verbose=1
+/opt/rh/devtoolset-9/root/usr/bin/cc  -DCHECK_FUNCTION_EXISTS=pthread_create -rdynamic CMakeFiles/cmTC_9816c.dir/CheckFunctionExists.c.o -o cmTC_9816c  -lpthreads 
+/opt/rh/devtoolset-9/root/usr/libexec/gcc/x86_64-redhat-linux/9/ld: 找不到 -lpthreads
+collect2: error: ld returned 1 exit status
+gmake[1]: *** [cmTC_9816c] 错误 1
+gmake[1]: 离开目录“/root/C_C++ learn/C++learning/线程池/build/CMakeFiles/CMakeScratch/TryCompile-jz28xF”
+gmake: *** [cmTC_9816c/fast] 错误 2
+
+
+
