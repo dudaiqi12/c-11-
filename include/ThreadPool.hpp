@@ -4,6 +4,7 @@
 #include <mutex>
 #include <queue>
 #include <unistd.h>
+#include <list>
 using namespace std;
 void manage(void* arg);
 void work(void* arg);
@@ -32,6 +33,14 @@ public:
     int getTaskNum(){
         return taskQ.size();
     }
+    mutex& getLock(){
+        return pool_lock;
+    }
+    void popThread(int i){
+        pool_lock.lock();
+        exitNum = i;
+        pool_lock.unlock();
+    }
 
     //判断线程池是否关闭
     bool is_shutdown();
@@ -45,18 +54,20 @@ private:
     int exitNum;
     bool shutdown = false;
     thread manager;//管理者线程
-    vector<thread> workers;//工作线程集合
+    list<thread> workers;//工作线程集合
     queue<Task> taskQ;//任务队列
 
     //锁
     mutex pool_lock;
 };
-void ThreadPool::addThread(){
-    /*for(int i = 0;i<workers.size();++i){
-        if(workers[i] ){
-
-        }
-    }*/
+void ThreadPool::addThread(int i){
+    while (i > 0)
+    {
+        workers.push_back(thread(work,this));
+        --i;
+    }
+    
+   
 }
 
 bool ThreadPool::is_shutdown(){
@@ -89,21 +100,36 @@ void manage(void* arg){
         sleep(3);
         
         //是否添加线程
-        //如果任务个数大于线程个数并且线程池没有被关闭
+        //如果任务个数+2大于线程个数并且线程池没有被关闭
         //并且线程个数小于max
         //就添加两个线程
-        if(pool->getTaskNum() > pool->getLiveNum()
-        && !pool->is_shutdown()
+        if(pool->getTaskNum() + 2 >= pool->getLiveNum()
         && pool->getLiveNum() < pool->getMax()){
-
+            pool->addThread(2);
         }
 
         // 如果忙线程个数的两倍小于存活线程，并且线程池没有关闭，那么
-        // 就删除两个线程
+        // 就删除两个线程 不是说管理线程主动是删 是通过一个信号 让工作线程自己紫砂
+        if(pool->getBusyNum()*2 < pool->getLiveNum()){
+            pool->popThread(2);
+        }
     }
 }
 void work(void* arg){
-    cout<<"work\n";
+    
+    ThreadPool* pool = (ThreadPool*) arg;
+    while (!pool->is_shutdown())
+    {
+       // 不停访问任务队列
+
+
+       //检查是否应该紫砂
+        
+        
+    }
+    
+   
+
 }
 
 ThreadPool::ThreadPool(int min_,int max_){
@@ -112,14 +138,16 @@ ThreadPool::ThreadPool(int min_,int max_){
     liveNum = min;
     busyNum = 0;
     exitNum = 0;
-    workers.resize(max_);
     manager = thread(manage,this);
-    for(int i = 0;i < min_; i++){
-        workers[i] = thread(work,this);
-    }
-    //hihihi
    
-
+    for(int i = 0;i < min_; i++){
+        workers.push_back(thread(work,this));
+    }
+    
+    cout<<workers.size()<<"  ";
+    //hihihi
+    
+    
     
     
 }

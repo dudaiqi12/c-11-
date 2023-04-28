@@ -11,7 +11,7 @@ void test(void* arg){
 
 int main()
 {
-	ThreadPool* pool = new ThreadPool(1,10);
+	ThreadPool* pool = new ThreadPool(5,10);
 	
 	std::cout << std::endl;
 	sleep(5);
