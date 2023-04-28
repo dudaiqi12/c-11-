@@ -117,7 +117,7 @@ ThreadPool::ThreadPool(int min_,int max_){
     for(int i = 0;i < min_; i++){
         workers[i] = thread(work,this);
     }
-    //哈哈哈哈哈哈哈哈asda
+    //hihihi
    
 
     
