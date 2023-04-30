@@ -16,6 +16,7 @@ public:
     Task getTask();
     bool isEmpty();
     int getSize();
+
 };
 
 //**************************实现****************************************
@@ -26,6 +27,9 @@ TaskQueue::TaskQueue()
 
 TaskQueue::~TaskQueue()
 {
+    while(!isEmpty()){
+        taskQueue.pop();
+    }
 }
 
 //添加任务
@@ -59,3 +63,4 @@ inline int TaskQueue::getSize()
     std::lock_guard<std::mutex>  lock(taskQueue_lock);
     return taskQueue.size();
 }
+

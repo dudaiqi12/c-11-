@@ -30,6 +30,9 @@ ThreadPool::ThreadPool(int min_, int max_ ) : min(min_),max(max_)
 
 ThreadPool::~ThreadPool(){
     finish_ = true;
+    if(manager.joinable()){
+        manager.join();
+    }
 }
 
 inline void ThreadPool::addThread()
@@ -45,10 +48,10 @@ void ThreadPool::addTask(Task task){
 
 inline void ThreadPool::removeThread()
 {
- 
     for(auto& temp : workerThread_map){
         if(temp.second->getState() == WorkThread::STATE_WAIT){
             temp.second->finished_ = true;
+            
             workerThread_map.erase(temp.first);
             std::cout<<"移除线程: 剩下"<<workerThread_map.size()<<"个\n";
             break;

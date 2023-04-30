@@ -49,6 +49,7 @@ WorkThread::WorkThread(TaskQueue &taskQueue) : taskQueue_(taskQueue)
             state_ = WorkThread::STATE_WORK;
             Task task = taskQueue.getTask();
             task.run();
+            
         } 
     });
 }
