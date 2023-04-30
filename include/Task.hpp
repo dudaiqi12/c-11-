@@ -11,19 +11,19 @@ public:
     void run();
 };
 
-
+//**************************实现****************************************
 
 
 Task::Task()
 {
     func = nullptr;
     arg = nullptr;
-};
+}
 Task::Task(callback func_, void *args_)
 {
     func = func_;
     arg = args_;
-};
+}
 
 void Task::run(){
     if(func != nullptr){

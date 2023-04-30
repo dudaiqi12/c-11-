@@ -13,7 +13,7 @@ add_compile_options("-Wall")
 set(CMAKE_BUILD_TYPE "Debug")
 
 # set(SRC
-#  src/Person.hpp)
+#  src/k.cpp)
  
 add_executable(../main src/main.cpp)
 

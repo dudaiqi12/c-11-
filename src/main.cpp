@@ -3,41 +3,31 @@
 #include <unistd.h> // sleep(1);
 #include <vector>
 #include <thread>
+#include <string>
+#include <chrono>
 using namespace std;
 
-void test(void* arg){
-	
-	cout<<"\n "<<pthread_self()<<" 哈哈哈哈或或"<<"\n";
-}
 
-
+// 测试用例
 void test1(){
-	ThreadPool* pool = new ThreadPool(3,10);
- 
-	Task k(test,nullptr);
-	cout<<"等待3秒\n";
-	while(1){
-		sleep(3);
-		cout<<"添加任务\n";
-		pool->addTask(k);	
-	}
+	ThreadPool* pool = new ThreadPool(1,50);
 
-	// testclass k;
+	pool->addTask(Task([](void*){while(1){sleep(1);std::cout<<"1\n";}},nullptr));
+	pool->addTask(Task([](void*){std::cout<<pthread_self()<<"hhh1231\n";},nullptr));
 	
-	std::cout << std::endl;
-	sleep(30);
+	pool->run();
+
+
+
+	sleep(50);
 }
 
-void test2(){
-	vector<thread> k;
-	Task k2(test,NULL);
-	k2.run();
 
-}
 
 int main()
 {
+	
 	test1();
-	sleep(2);
+
 	return 0;
 }

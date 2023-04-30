@@ -1,4 +1,3 @@
-#include <memory>
 #include <unordered_map>
 #include "TaskQueue.hpp"
 #include "WorkerThread.hpp"
@@ -12,7 +11,11 @@ class ManageThread
     TaskQueue& taskQueue;
     std::atomic_bool& finish_;
 public:
-    ManageThread();
+    ManageThread(int& min_,
+    int& max_,
+    std::unordered_map<std::thread::id, WorkThread_ptr>& workerThread_map_,
+    TaskQueue& taskQueue_,
+    std::atomic_bool& finish__);
     ~ManageThread();
     void addThread();
     void removeThread();
@@ -22,7 +25,7 @@ ManageThread::ManageThread(int& min_,
     int& max_,
     std::unordered_map<std::thread::id, WorkThread_ptr>& workerThread_map_,
     TaskQueue& taskQueue_,
-    std::atomic_bool& finish__,)
+    std::atomic_bool& finish__)
     {
     min = min_;
     max = max_;
@@ -61,7 +64,6 @@ void ManageThread::removeThread(){
             break;
         }
     }
-    
 }
 
 using ManageThread_ptr = std::shared_ptr<ManageThread>;
