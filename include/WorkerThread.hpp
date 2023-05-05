@@ -3,6 +3,16 @@
 #include <atomic>
 #include <thread>
 #include <memory>
+#include <condition_variable>
+#include <unistd.h>
+
+
+
+//条件变量 唤醒线程
+static std::mutex work_lock;
+static std::condition_variable tv; 
+static std::unique_lock<std::mutex> lock(work_lock);
+
 // 用来管理工作线程的生命周期
 class WorkThread
 {
@@ -16,11 +26,10 @@ public:
     // 线程的状态
     constexpr static int STATE_WAIT = 1;
     constexpr static int STATE_WORK = 2;
-    constexpr static int STATE_EXIT = 3;
 
     // 信号量  用于知道自己是否已经完了
     // 有管理者线程通知
-    std::atomic_bool finished_;
+    bool finished_;
 
     WorkThread(TaskQueue &taskQueue);
     ~WorkThread();
@@ -36,31 +45,35 @@ WorkThread::WorkThread(TaskQueue &taskQueue) : taskQueue_(taskQueue)
     finished_ = false;
     // 创建线程  让它一直读任务队列  lambda捕获this taskQueue
     thread_ = std::thread([this,&taskQueue]{
-        while(!finished_){
-            
-            if(taskQueue.isEmpty()){
-                state_ = WorkThread::STATE_WAIT;
-                continue;
-            }
+        while(true){
+      
             if(finished_){
-                state_ = WorkThread::STATE_EXIT;
+                // std::cout<<"线程"<<std::this_thread::get_id()<<"退出--------\n";
                 break;
             }
-            state_ = WorkThread::STATE_WORK;
-            Task task = taskQueue.getTask();
-            task.run();
-            
+            if(taskQueue.isEmpty()){
+                //如果任务队列为空 就阻塞
+                //当工作线程那边notify时候才醒来
+                // std::cout<<"线程"<<std::this_thread::get_id()<<"因任务队列为空而阻塞\n";
+                state_ = WorkThread::STATE_WAIT;
+                tv.wait_for(lock,std::chrono::seconds(4));
+                // std::cout<<"线程"<<std::this_thread::get_id()<<"被唤醒\n";
+            }else{
+                Task_ptr task = taskQueue.getTask();
+                state_ = WorkThread::STATE_WORK;
+                task->run();
+            }
         } 
+        
     });
 }
 
+//被析构之前 让c++运行时库管理 线程执行完
 WorkThread::~WorkThread()
 {
-    if (thread_.joinable())
-    {
-        // 阻塞当前线程 直到thread_调用完成
-        thread_.join();
-    }
+    std::cout<<"线程:"<<thread_.get_id()<<"被移除\n";
+    finished_ = true;
+    thread_.detach();
 }
 
 std::thread::id WorkThread::getID()
