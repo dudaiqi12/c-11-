@@ -10,7 +10,7 @@ using namespace std;
 //测试用例1
 void test1(){
 	// 构建线程池  最少存在2个线程 最多有10个
-	ThreadPool* pool = new ThreadPool(2,10);
+	ThreadPool* pool = new ThreadPool(10,10);
 	// 启动线程池
 	pool->run();
 	//返回期物
@@ -21,6 +21,8 @@ void test1(){
 	result.wait();
 	//得到期货 88+88
 	cout<<result.get()<<"\n";
+	delete pool;
+	sleep(100);
 }
 
 

@@ -24,7 +24,7 @@ private:
     std::map<std::thread::id,WorkThread_ptr> workerThread_map;
     std::thread manager;
     TaskQueue taskQueue;
-    std::atomic_bool finish_;
+    bool finish_;
 };
 
 ThreadPool::ThreadPool(int min_, int max_ ) : min(min_),max(max_)
@@ -37,9 +37,11 @@ ThreadPool::ThreadPool(int min_, int max_ ) : min(min_),max(max_)
 
 ThreadPool::~ThreadPool(){
     finish_ = true;
-    if(manager.joinable()){
-        manager.join();
-    }
+    workerThread_map.clear();
+    sleep(4);
+
+    taskQueue.clear();
+    manager.detach();
 }
 
 
@@ -114,6 +116,8 @@ inline void ThreadPool::run()
                 removeThread();
             }
         }
+        // 先唤醒所有线程
+        tv.notify_all();
         std::cout<<"管理者线程退出\n";
     });
 }

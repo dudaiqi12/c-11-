@@ -20,7 +20,7 @@ private:
     std::thread thread_;
     // 既然是工作线程 让它看到任务队列 很合理
     TaskQueue &taskQueue_;
-    std::atomic_int state_;
+    int state_;
 
 public:
     // 线程的状态
@@ -45,12 +45,7 @@ WorkThread::WorkThread(TaskQueue &taskQueue) : taskQueue_(taskQueue)
     finished_ = false;
     // 创建线程  让它一直读任务队列  lambda捕获this taskQueue
     thread_ = std::thread([this,&taskQueue]{
-        while(true){
-      
-            if(finished_){
-                // std::cout<<"线程"<<std::this_thread::get_id()<<"退出--------\n";
-                break;
-            }
+        while(!finished_){
             if(taskQueue.isEmpty()){
                 //如果任务队列为空 就阻塞
                 //当工作线程那边notify时候才醒来
@@ -62,17 +57,23 @@ WorkThread::WorkThread(TaskQueue &taskQueue) : taskQueue_(taskQueue)
                 Task_ptr task = taskQueue.getTask();
                 state_ = WorkThread::STATE_WORK;
                 task->run();
+                //因为这是一个任务的智能指针
+                //所以执行完这个任务以后要释放这块内存
+                task = nullptr;
+            }
+            if(!finished_){
+                break;
             }
         } 
-        
+        // std::cout<<"线程"<<std::this_thread::get_id()<<"结束------\n";
     });
 }
 
 //被析构之前 让c++运行时库管理 线程执行完
 WorkThread::~WorkThread()
 {
-    std::cout<<"线程:"<<thread_.get_id()<<"被移除\n";
     finished_ = true;
+    std::cout<<"线程:"<<thread_.get_id()<<"被移除\n";
     thread_.detach();
 }
 

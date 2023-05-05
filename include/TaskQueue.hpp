@@ -18,6 +18,7 @@ public:
     Task_ptr getTask();
     bool isEmpty();
     size_t getSize();
+    void clear();
 };
 
 //**************************实现****************************************
@@ -30,8 +31,8 @@ TaskQueue::~TaskQueue()
 {
     while(!isEmpty()){
         Task_ptr task = taskQueue.front();
-        task = nullptr;
         taskQueue.pop();
+        task = nullptr;
     }
 }
 
@@ -39,7 +40,6 @@ TaskQueue::~TaskQueue()
 inline void TaskQueue::addTask(Task_ptr task)
 {
     std::lock_guard<std::mutex> lock(taskQueue_lock);
-    
     taskQueue.push(task);
 }
 
@@ -71,3 +71,13 @@ inline size_t TaskQueue::getSize()
     return taskQueue.size();
 }
 
+inline void TaskQueue::clear()
+{
+    //清空任务队列 把所有任务丢掉
+    std::lock_guard<std::mutex> lock(taskQueue_lock);
+    while(!taskQueue.empty()){
+        Task_ptr task = taskQueue.front();
+        taskQueue.pop();
+        task = nullptr;
+    }
+}
