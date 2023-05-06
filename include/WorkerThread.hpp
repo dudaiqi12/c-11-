@@ -61,7 +61,7 @@ WorkThread::WorkThread(TaskQueue &taskQueue) : taskQueue_(taskQueue)
                 //所以执行完这个任务以后要释放这块内存
                 task = nullptr;
             }
-            if(!finished_){
+            if(finished_){
                 break;
             }
         } 
